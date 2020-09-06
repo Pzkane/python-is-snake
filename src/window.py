@@ -1,5 +1,5 @@
 import arcade
-from src.logic.grid import Grid
+from src.logic.snake import Snake
 
 # Grid rows and columns count
 ROW_COUNT = 15
@@ -17,25 +17,38 @@ SCREEN_WIDTH = (CELL_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (CELL_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 WINDOW_TITLE = "Python is a Snek"
 
+# debug
+MOUSEPRESS_ID = 0
+
 class GameWindow(arcade.Window):
     def __init__(self):
+        self.mousepress_id = MOUSEPRESS_ID
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE)
 
         arcade.set_background_color(arcade.color.WHITE)
 
-        self.grid = Grid(ROW_COUNT, COLUMN_COUNT, CELL_WIDTH, CELL_HEIGHT, MARGIN)
+        self.snake = Snake(ROW_COUNT, COLUMN_COUNT, CELL_WIDTH, CELL_HEIGHT, MARGIN)
 
     def on_draw(self):
         arcade.start_render()
 
-        self.grid.draw_sprite_grid()
+        self.snake.draw_sprite_grid()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         column = int(x // (CELL_WIDTH + MARGIN))
         row = int(y // (CELL_HEIGHT + MARGIN))
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column})")
-        print(self.grid.get_cell_value(row, column))
-        self.grid.set_cell_value(row, column, not self.grid.get_cell_value(row, column))
-        self.grid.redraw_sprites()
+        #print(self.snake.get_cell_value(row, column))
+        self.snake.set_cell_value(row, column, self.mousepress_id)
+        self.mousepress_id += 1
+        if self.mousepress_id > 3:
+            self.mousepress_id = 0
+        self.snake.redraw_sprites()
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == 119:
+            self.snake.move_up()
+        self.snake.redraw_sprites()
+        
 

@@ -18,7 +18,10 @@ class Grid():
         for row in range(self.row_count):
             self.grid.append([])
             for col in range(self.col_count):
-                self.grid[row].append(0)
+                self.grid[row].append({
+                    "type": 0,
+                    "position": 0
+                })
 
     def init_grid_sprite_list(self):
         self.grid_sprite_list = arcade.SpriteList()
@@ -39,13 +42,12 @@ class Grid():
         for row in range(self.row_count):
             for col in range(self.col_count):
                 position = row * self.col_count + col
-                print(Switch()._by_grid_value(self.grid[row][col]))
-                self.grid_sprite_list[position].color = Switch()._by_grid_value(self.grid[row][col])
+                self.grid_sprite_list[position].color = Switch()._by_grid_value(self.grid[row][col]["type"])
 
     # setters
-    def set_cell_value(self, row, column, value):
-        self.grid[row][column] = value
+    def set_cell_type(self, row, column, value):
+        self.grid[row][column]["type"] = value
 
     # getters
-    def get_cell_value(self, row, column):
+    def get_cell(self, row, column):
         return self.grid[row][column]

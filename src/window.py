@@ -40,7 +40,7 @@ class GameWindow(arcade.Window):
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column})")
         #print(self.snake.get_cell_value(row, column))
-        self.snake.set_cell_value(row, column, self.mousepress_id)
+        self.snake.set_cell_type(row, column, self.mousepress_id)
         self.mousepress_id += 1
         if self.mousepress_id > 3:
             self.mousepress_id = 0
@@ -50,5 +50,4 @@ class GameWindow(arcade.Window):
         if symbol == 119:
             self.snake.move_up()
         self.snake.redraw_sprites()
-        
 

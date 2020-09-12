@@ -31,22 +31,35 @@ class Snake(Grid):
 
     def move_up(self):
         snake = self.get_snake_position()
-        self.set_snake_length(snake[-1]["length"])
-        new_snake = copy.deepcopy(snake)
+        snake_head_row = snake[0]["row"] + 1
+        if snake_head_row > self.row_count - 1:
+            snake_head_row = 0
 
-        for i in range(self.get_snake_length()):
-            if i == 0:
-                # actual new values
-                new_snake[i]["row"] = snake[i]["row"] + 1
-            elif i == snake[-1]["length"] - 1:
-                new_snake[i] = snake[-3]
-                new_snake[i]["position"] = snake[-1]["length"]
-            else:
-                new_snake[i] = snake[i-1]
-                new_snake[i]["position"] = snake[i-1]["position"]
-                new_snake[i]["position"] += 1
+        self.update_snake_cells(snake_head_row, snake[0]["col"])
 
-        self.update_snake_pos(new_snake)
+    def move_down(self):
+        snake = self.get_snake_position()
+        snake_head_row = snake[0]["row"] - 1
+        if snake_head_row < 0:
+            snake_head_row = self.row_count - 1
+
+        self.update_snake_cells(snake_head_row, snake[0]["col"])
+
+    def move_left(self):
+        snake = self.get_snake_position()
+        snake_head_col = snake[0]["col"] - 1
+        if snake_head_col < 0:
+            snake_head_col = self.col_count - 1
+
+        self.update_snake_cells(snake[0]["row"], snake_head_col)
+
+    def move_right(self):
+        snake = self.get_snake_position()
+        snake_head_col = snake[0]["col"] + 1
+        if snake_head_col > self.col_count - 1:
+            snake_head_col = 0
+
+        self.update_snake_cells(snake[0]["row"], snake_head_col)
 
     def update_snake_pos(self, snake):
         old_snake = self.get_snake_position()
@@ -70,6 +83,24 @@ class Snake(Grid):
                 self.grid[row][col]["type"] = 1
             else:
                 self.grid[row][col]["type"] = 2
+
+    def update_snake_cells(self, snake_head_row, snake_head_col):
+        snake = self.get_snake_position()
+        self.set_snake_length(snake[-1]["length"])
+        new_snake = copy.deepcopy(snake)
+        new_snake[0]["row"] = snake_head_row
+        new_snake[0]["col"] = snake_head_col
+
+        for i in range(self.get_snake_length()):
+            if i == snake[-1]["length"] - 1:
+                new_snake[i] = snake[-3]
+                new_snake[i]["position"] = snake[-1]["length"]
+            elif i != 0:
+                new_snake[i] = snake[i-1]
+                new_snake[i]["position"] = snake[i-1]["position"]
+                new_snake[i]["position"] += 1
+
+        self.update_snake_pos(new_snake)
 
     # setters
     def set_snake_length(self, length):

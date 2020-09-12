@@ -39,15 +39,25 @@ class GameWindow(arcade.Window):
         row = int(y // (CELL_HEIGHT + MARGIN))
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column})")
-        #print(self.snake.get_cell_value(row, column))
-        self.snake.set_cell_type(row, column, self.mousepress_id)
-        self.mousepress_id += 1
-        if self.mousepress_id > 3:
-            self.mousepress_id = 0
-        self.snake.redraw_sprites()
+        if row < ROW_COUNT and column < COLUMN_COUNT:
+            self.snake.set_cell_type(row, column, self.mousepress_id)
+            self.mousepress_id += 1
+            if self.mousepress_id > 3:
+                self.mousepress_id = 0
+            self.snake.redraw_sprites()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == 119:
             self.snake.move_up()
+
+        if symbol == 115:
+            self.snake.move_down()
+
+        if symbol == 97:
+            self.snake.move_left()
+
+        if symbol == 100:
+            self.snake.move_right()
+
         self.snake.redraw_sprites()
 

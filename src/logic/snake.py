@@ -28,6 +28,8 @@ class Snake(Grid):
 
         self.set_snake_length(6)
 
+        self.is_snake_longer_now = False
+
 
     def move_up(self):
         snake = self.get_snake_position()
@@ -64,7 +66,12 @@ class Snake(Grid):
     def update_snake_pos(self, snake):
         old_snake = self.get_snake_position()
         # unset old snake cells
-        for i in range(self.get_snake_length()):
+        old_snake_length = self.get_snake_length()
+        if self.is_snake_longer_now:
+            old_snake_length -= 1
+            self.make_snake_longer(False)
+
+        for i in range(old_snake_length):
             row = old_snake[i]["row"]
             col = old_snake[i]["col"]
             self.grid[row][col]["position"] = 0
@@ -86,7 +93,10 @@ class Snake(Grid):
 
     def update_snake_cells(self, snake_head_row, snake_head_col):
         snake = self.get_snake_position()
-        self.set_snake_length(snake[-1]["length"])
+        if self.is_snake_longer_now:
+            self.set_snake_length(self.get_snake_length() + 1)
+        else:
+            self.set_snake_length(snake[-1]["length"])
         new_snake = copy.deepcopy(snake)
         new_snake[0]["row"] = snake_head_row
         new_snake[0]["col"] = snake_head_col
@@ -100,11 +110,40 @@ class Snake(Grid):
                 new_snake[i]["position"] = snake[i-1]["position"]
                 new_snake[i]["position"] += 1
 
-        self.update_snake_pos(new_snake)
+        print(new_snake)
+        if self.check_collisions(new_snake):
+            self.update_snake_pos(new_snake)
+        else:
+            print("collision!")
+
+    def check_collisions(self, snake):
+        """
+        Check snake's head collision, returns 
+        @Bool
+        if it can proceed
+        """
+        # get food location and make snake grow on next step
+        for row in range(self.row_count):
+            for col in range(self.col_count):
+                if self.grid[row][col]["type"] == 3:
+                    if snake[0]["row"] == row and snake[0]["col"] == col:
+                        print('here')
+                        self.make_snake_longer(True)
+                    return True
+        
+        # check if snake has gotten into itself or barrier
+        for i, s_bit in enumerate(snake):
+            if i != 0 and i != self.get_snake_length() and s_bit["row"] == snake[0]["row"] and s_bit["col"] == snake[0]["col"]:
+                return False
+
+        return True
 
     # setters
     def set_snake_length(self, length):
         self.snake_length = length
+
+    def make_snake_longer(self, value):
+        self.is_snake_longer_now = value
 
     # getters
     def get_grid(self):

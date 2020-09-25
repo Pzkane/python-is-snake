@@ -27,12 +27,22 @@ class GameWindow(arcade.Window):
 
         arcade.set_background_color(arcade.color.WHITE)
 
-        self.snake = Snake(ROW_COUNT, COLUMN_COUNT, CELL_WIDTH, CELL_HEIGHT, MARGIN)
+        self.snake = Snake(ROW_COUNT, COLUMN_COUNT, CELL_WIDTH, CELL_HEIGHT, MARGIN, 1.0)
+        self.game_over = False
+
+    def redraw_all(self):
+        self.snake.redraw_sprites()
 
     def on_draw(self):
         arcade.start_render()
 
         self.snake.draw_sprite_grid()
+        if self.game_over:
+            arcade.draw_text("GAME OVER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, arcade.color.YELLOW, 36, width=0, align="left", anchor_x="center", anchor_y="center")
+
+    def on_update(self, delta_time):
+        self.snake.on_update(delta_time)
+        self.redraw_all()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         column = int(x // (CELL_WIDTH + MARGIN))
@@ -47,17 +57,25 @@ class GameWindow(arcade.Window):
             self.snake.redraw_sprites()
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == 119:
-            self.snake.move_up()
+        if not self.snake.is_doomed():
+            print(self.snake.move_query_is_empty)
+            if self.snake.move_query_is_empty:
+                print('HERE')
+                if symbol == 119:
+                    self.snake.query_move_up()
 
-        if symbol == 115:
-            self.snake.move_down()
+                if symbol == 115:
+                    self.snake.query_move_down()
 
-        if symbol == 97:
-            self.snake.move_left()
+                if symbol == 97:
+                    self.snake.query_move_left()
 
-        if symbol == 100:
-            self.snake.move_right()
+                if symbol == 100:
+                    self.snake.query_move_right()
 
-        self.snake.redraw_sprites()
+                if self.snake.is_doomed():
+                    self.game_over = True
+        else:
+            self.game_over = True
+            
 

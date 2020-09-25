@@ -2,9 +2,10 @@ import arcade, copy
 from src.logic.grid import Grid
 
 class Snake(Grid):
-    def __init__(self, row_count, col_count, cell_width, cell_height, margin):
+    def __init__(self, row_count, col_count, cell_width, cell_height, margin, time_between_moves: float = 1.0):
         super().__init__(row_count, col_count, cell_width, cell_height, margin)
         self.init_snake_position()
+        self.setup(time_between_moves)
 
     # inits
     def init_snake_position(self):
@@ -17,19 +18,37 @@ class Snake(Grid):
         self.grid[0][1]["type"] = 2
         self.grid[0][1]["position"] = 3
 
-        self.grid[0][2]["type"] = 2
-        self.grid[0][2]["position"] = 4
-
-        self.grid[1][2]["type"] = 2
-        self.grid[1][2]["position"] = 5
-
-        self.grid[2][2]["type"] = 2
-        self.grid[2][2]["position"] = 6
-
         self.set_snake_length(6)
 
+    def setup(self, time_between_moves):
+        self.snake_is_doomed = False
         self.is_snake_longer_now = False
+        self.time_since_update = 0.0
+        self.time_between_moves = time_between_moves
 
+        self.up = True
+        self.down = False
+        self.left = False
+        self.right = False
+
+        self.move_query_is_empty = True
+
+    def on_update(self, delta_time: float = 1/60):
+        self.time_since_update += delta_time
+
+        if self.time_since_update > self.time_between_moves:
+            self.time_since_update = 0
+            if self.up:
+                self.move_up()
+
+            if self.down:
+                self.move_down()
+
+            if self.left:
+                self.move_left()
+
+            if self.right:
+                self.move_right()
 
     def move_up(self):
         snake = self.get_snake_position()
@@ -63,6 +82,34 @@ class Snake(Grid):
 
         self.update_snake_cells(snake[0]["row"], snake_head_col)
 
+    def query_move_up(self):
+        self.up = True
+        self.down = False
+        self.left = False
+        self.right = False
+        self.move_query_is_empty = False
+
+    def query_move_down(self):
+        self.up = False
+        self.down = True
+        self.left = False
+        self.right = False
+        self.move_query_is_empty = False
+
+    def query_move_left(self):
+        self.up = False
+        self.down = False
+        self.left = True
+        self.right = False
+        self.move_query_is_empty = False
+
+    def query_move_right(self):
+        self.up = False
+        self.down = False
+        self.left = False
+        self.right = True
+        self.move_query_is_empty = False
+
     def update_snake_pos(self, snake):
         old_snake = self.get_snake_position()
         # unset old snake cells
@@ -91,6 +138,8 @@ class Snake(Grid):
             else:
                 self.grid[row][col]["type"] = 2
 
+        self.move_query_is_empty = True
+
     def update_snake_cells(self, snake_head_row, snake_head_col):
         snake = self.get_snake_position()
         if self.is_snake_longer_now:
@@ -114,7 +163,7 @@ class Snake(Grid):
         if self.check_collisions(new_snake):
             self.update_snake_pos(new_snake)
         else:
-            print("collision!")
+            self.snake_is_doomed = True
 
     def check_collisions(self, snake):
         """
@@ -174,3 +223,6 @@ class Snake(Grid):
         })
 
         return snake_info
+
+    def is_doomed(self):
+        return self.snake_is_doomed

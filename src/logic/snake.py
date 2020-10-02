@@ -176,9 +176,9 @@ class Snake(Grid):
             for col in range(self.col_count):
                 if self.grid[row][col]["type"] == 3:
                     if snake[0]["row"] == row and snake[0]["col"] == col:
-                        print('here')
                         self.make_snake_longer(True)
-                    return True
+                        self.food_spawned = False
+                        return True
         
         # check if snake has gotten into itself or barrier
         for i, s_bit in enumerate(snake):

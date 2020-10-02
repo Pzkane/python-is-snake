@@ -1,4 +1,4 @@
-import arcade
+import arcade, random
 from src.extensions.switch import Switch
 
 class Grid():
@@ -8,9 +8,36 @@ class Grid():
         self.cell_width = cell_width
         self.cell_height = cell_height
         self.margin = margin
+        
+        self.food_spawned = False
 
         self.init_grid()
         self.init_grid_sprite_list()
+        
+    def spawn_food(self):
+        if self.food_spawned:
+            return
+
+        free_cells = list()
+        for row in range(self.row_count):
+            for col in range(self.col_count):
+                if (self.grid[row][col]["type"] == 0):
+                    free_cells.append({
+                        "row": row,
+                        "col": col
+                    })
+        
+        is_listed = False
+        while not is_listed:
+            rand_row = random.randint(0, self.row_count-1)
+            rand_col = random.randint(0, self.col_count-1)
+            for cell in free_cells:
+                if cell["row"] == rand_row and cell["col"] == rand_col:
+                    is_listed = True
+                    break
+            
+        self.grid[rand_row][rand_col]["type"] = 3
+        self.food_spawned = True
 
     # inits
     def init_grid(self):

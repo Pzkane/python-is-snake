@@ -27,7 +27,7 @@ class GameWindow(arcade.Window):
 
         arcade.set_background_color(arcade.color.WHITE)
 
-        self.snake = Snake(ROW_COUNT, COLUMN_COUNT, CELL_WIDTH, CELL_HEIGHT, MARGIN, 1.0)
+        self.snake = Snake(ROW_COUNT, COLUMN_COUNT, CELL_WIDTH, CELL_HEIGHT, MARGIN, 0.1)
         self.game_over = False
 
     def redraw_all(self):
@@ -42,6 +42,7 @@ class GameWindow(arcade.Window):
 
     def on_update(self, delta_time):
         self.snake.on_update(delta_time)
+        self.snake.spawn_food()
         self.redraw_all()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
@@ -60,7 +61,6 @@ class GameWindow(arcade.Window):
         if not self.snake.is_doomed():
             print(self.snake.move_query_is_empty)
             if self.snake.move_query_is_empty:
-                print('HERE')
                 if symbol == 119:
                     self.snake.query_move_up()
 

@@ -41,9 +41,12 @@ class GameWindow(arcade.Window):
             arcade.draw_text("GAME OVER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, arcade.color.YELLOW, 36, width=0, align="left", anchor_x="center", anchor_y="center")
 
     def on_update(self, delta_time):
-        self.snake.on_update(delta_time)
-        self.snake.spawn_food()
-        self.redraw_all()
+        if self.snake.is_doomed():
+            self.game_over = True
+        else:
+            self.snake.on_update(delta_time)
+            self.snake.spawn_food()
+            self.redraw_all()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         column = int(x // (CELL_WIDTH + MARGIN))
@@ -72,9 +75,6 @@ class GameWindow(arcade.Window):
 
                 if symbol == 100:
                     self.snake.query_move_right()
-
-                if self.snake.is_doomed():
-                    self.game_over = True
         else:
             self.game_over = True
             

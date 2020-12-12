@@ -83,32 +83,36 @@ class Snake(Grid):
         self.update_snake_cells(snake[0]["row"], snake_head_col)
 
     def query_move_up(self):
-        self.up = True
-        self.down = False
-        self.left = False
-        self.right = False
-        self.move_query_is_empty = False
+        if self.check_directional_cell("up"):
+            self.up = True
+            self.down = False
+            self.left = False
+            self.right = False
+            self.move_query_is_empty = False
 
     def query_move_down(self):
-        self.up = False
-        self.down = True
-        self.left = False
-        self.right = False
-        self.move_query_is_empty = False
+        if self.check_directional_cell("down"):
+            self.up = False
+            self.down = True
+            self.left = False
+            self.right = False
+            self.move_query_is_empty = False
 
     def query_move_left(self):
-        self.up = False
-        self.down = False
-        self.left = True
-        self.right = False
-        self.move_query_is_empty = False
+        if self.check_directional_cell("left"):
+            self.up = False
+            self.down = False
+            self.left = True
+            self.right = False
+            self.move_query_is_empty = False
 
     def query_move_right(self):
-        self.up = False
-        self.down = False
-        self.left = False
-        self.right = True
-        self.move_query_is_empty = False
+        if self.check_directional_cell("right"):
+            self.up = False
+            self.down = False
+            self.left = False
+            self.right = True
+            self.move_query_is_empty = False
 
     def update_snake_pos(self, snake):
         old_snake = self.get_snake_position()
@@ -164,6 +168,38 @@ class Snake(Grid):
             self.update_snake_pos(new_snake)
         else:
             self.snake_is_doomed = True
+
+    def check_directional_cell(self, direction: str):
+        """
+        Check desired cell to continue moving, retunrs
+        @Bool
+        if cell is not part of the snake
+        """
+        directions = {
+            "up": [1, 0],
+            "down": [-1, 0],
+            "left": [0, -1],
+            "right": [0, 1]
+        }
+        snake = self.get_snake_position()
+        _row = snake[0]["row"] + directions[direction][0]
+        _col = snake[0]["col"] + directions[direction][1]
+
+        if _row >= self.row_count:
+            _row = 0
+        elif _row < 0:
+            _row = self.row_count - 1
+
+        if _col >= self.col_count:
+            _col = 0
+        elif _col < 0:
+            _col = self.col_count - 1
+
+        cell = self.get_cell(_row, _col)
+
+        if cell["type"] != 2:
+            return True
+        return False
 
     def check_collisions(self, snake):
         """
